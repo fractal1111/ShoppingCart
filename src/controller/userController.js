@@ -3,6 +3,7 @@ const userModel = require('../models/userModel')
 const validator = require('../validator/validators')
 const aws = require('../validator/awsS3')
 const bcrypt = require('bcryptjs')
+const jwt = require("jsonwebtoken")
 
 const register = async (req, res) => {
 try {
@@ -18,12 +19,15 @@ try {
     let files = req.files;
     let uploadedFileURL
     
+    console.log(validator.isValid(fname))
+   
     if (!validator.isValid(fname)) {
         return res
         .status(400)
         .send({ Status: false, Message: 'invalid First Name' })
     }
 
+   
     if (!validator.isValid(lname)) {
         return res
         .status(400)
@@ -68,7 +72,7 @@ try {
         .send({ status: false, message: 'password Is Required' })
     }
 
-    if(!validator.isvalidPass) {
+    if(!validator.isvalidPass(password)) {
         return res
         .status(400)
         .send({ status: false, message: `password Should Be In Beetween 8-15 ` })
@@ -168,11 +172,17 @@ try{
     let email = req.body.email
     let password = req.body.password
 
-    if(!isValid(email)){
-        return res.status(400).send({status:false, msg:"email is requires"})
+    if(!validator.isValid(email)){
+        return res.status(400).send({status:false, msg:"email is required"})
+
     }
 
-    if(!isValid(password)){
+    if(!validator.isValidEmail(email)){
+        return res.status(400).send({Status:false , msg:"please provide valid email id"})
+    }
+    
+    
+    if(! validator.isValid(password)){
         return res.status(400).send({status:false, msg:"password is required"})
     }
 
@@ -182,11 +192,10 @@ try{
         return res.status(404).send({status:false, msg:"email not found"})
     }
 
-    let user1= await userModel.findOne({password})
 
-    if(!user1){
-        return res.status(404).send({status:false, msg:"password not found"})
-    }
+    let match = await bcrypt.compare(password , user.password)
+
+   if( match ){//after decrypting
 
     let token= jwt.sign(
         {
@@ -198,9 +207,13 @@ try{
         }
     );
     res.setHeader("x-api-key", token)
-    res.status(201).send({status:true, data:token})
+    res.status(200).send({status:true, data:{userId:user._id , token:token}})
 
-    }catch(err){
+    }else{
+        return res.status(400).send({Status:false , msg:"Incorrect Password"})}
+}
+    catch(err){
+        return res.status(500).send({Status:false , msg:err.message})
 
     }
 }
@@ -212,32 +225,33 @@ try {
 
     //validating userId.
 
-    if (!isValid(userParams)) {
+    if (!validator.isValidObjectId(userParams)) {
         return res
         .status(400)
-        .send({ status: false, message: "Inavlid userId." })
+        .send({ status: false, message: "Inavlid userId.Please enter a correct objectId" })
     }
 
-    //Finding the user in DB
+   console.log(userParams)
+   console.log(req.userId)
+if((userParams == req.userId)){    //Authorization
+
+ //Finding the user in DB
 
 const findUser = await userModel.findOne({ _id: userParams })
     if (!findUser) {
         return res
         .status(404)
-        .send({ status: false, message: `User does not exist or is already been deleted for this ${userParams}.` })
+        .send({ status: false, message: `User ${userParams} does not exist.` })}
         
-    }else if (findUser.userId != req.userId) {     //Authorization
-        return res
-        .status(401)
-        .send({ status: false, message: "Unauthorized access."})
-    }
-    else{
-        return res
-        .status(200)
-        .send({status:true, msg:"granted", data:findUser})
-    }
+    
+   
+        return res.status(200).send({status:true, msg:"granted", data:findUser})
+    
 
-} catch (err) {
+}else{return res.status(403).send({Status:false , msg:"User not authorized to access requested id"})}
+
+} 
+catch (err) {
     return res
     .status(500)
     .send({ status: false, msg: err.message })
@@ -245,6 +259,211 @@ const findUser = await userModel.findOne({ _id: userParams })
 }
 
 
+//update profile
+
+
+const updateProfile = async function (req, res) {
+    try {
+  let userId = req.params.userId.trim()
+  if(! validator.isValidObjectId(userId)){
+    return res
+    .status(400)
+    .send({Status:false , msg:"Please enter valid user Id"})}
+
+    let user = await userModel.findById(userId)
+    if(!user){
+        return res
+        .status(404)
+            .send({Staus:false , msg:"User does not exist"})}
+  
+  if (userId == req.userId) {
+  
+      const requestBody = req.body
+      const files = req.files;
+      const {
+        fname,
+        lname,
+        email,
+        phone,
+        password,
+        address,
+  
+      } = req.body  
+  
+  
+      if (!validator.isValidRequestBody(requestBody)) {
+        res
+          .status(400)
+          .send({
+            status: false,
+            message: "Invalid request parameters. Please provide user details",
+          });
+        return;
+      }
+  
+  
+      filter = {address:user.address}
+  
+      // file validation
+      if (validator.isValidFiles(files)) {
+        if (!validator.isValidImage(files[0])) {
+          res
+            .status(400)
+            .send({ status: false, message: "file format should be image" });
+        }
+        let profileImage = await aws.uploadFile(files[0]);
+        filter["profileImage"] = profileImage
+  
+      }
+  
+  
+      // email validation
+  
+      if (validator.isValid(email)) {
+  
+        if (!validator.isValidEmail(email)) {
+          return res.status(400).send({
+            status: false,
+            message: `Email should be a valid email address`,
+          });
+  
+        }
+  
+        const isEmailAlreadyUsed = await userModel.findOne({ email }); // {email: email} object shorthand property
+  
+        if (isEmailAlreadyUsed) {
+          return res.status(400).send({
+            status: false,
+            message: `${email} email address is already registered`,
+          });
+  
+        }
+  
+        filter["email"] = email
+  
+      }
+  
+  
+  
+      // phone validation
+      if (validator.isValid(phone)) {
+        if (!validator.isValidPhone(phone)) {
+          return res.status(400).send({ status: false, message: "Please use valid Indian phone nummber" })
+        }
+  
+        const isPhoneAlreadyUsed = await userModel.findOne({ phone });
+  
+        if (isPhoneAlreadyUsed) {
+          return res.status(400).send({ status: false, message: `${phone} is already registered` });
+  
+        }
+  
+        filter["phone"] = phone
+      }
+  
+  
+  
+      // name validation
+      if (validator.isValid(fname)) {
+        filter['fname'] = fname
+      }
+  
+      if (validator.isValid(lname)) {
+  
+        filter['lname'] = lname
+      }
+  
+  
+      //address 
+      console.log(filter.address)
+    
+  if( address.shipping != undefined ){
+      
+      
+     
+  if (validator.isValid(address.shipping.street)) {
+        filter['address']['shipping']['street'] = address.shipping.street
+      };
+     
+      
+      if (validator.isValid(address.shipping.city)) {
+        filter['address']['shipping']['city'] = address.shipping.city
+      }
+  
+  
+      if (validator.isValid(address.shipping.pincode)) {
+        if (!validator.isValidNumber(parseInt(pincode))) {
+          return res.status(400).send({ status: false, message: "pincode attribute should be a number" });
+  
+        }
+  
+        filter['address']['shipping']['pincode'] = address.shipping.pincode
+      };
+      console.log(filter)
+    }
+  
+  
+      // address billing
+      
+    
+      if(address.billing != undefined){
+      if (validator.isValid(address.billing.street)) {
+        filter['address'] = address
+      };
+  
+      if (validator.isValid(address.billing.city)) {
+        filter['address']['billing']['city'] = address.billing.city
+      }
+  
+  
+      if (validator.isValid(address.billing.pincode)) {
+        if (!validator.isValidNumber(parseInt(address.billing.pincode))) {
+          return res.status(400).send({ status: false, message: "pincode attribute should be a number" });
+  
+        }
+  
+        filter['address']['billing']['pincode'] = address.billing.pincode
+      }
+    };
+  
+  
+      // password
+      if (validator.isValid(password)) {
+  
+        if (!validator.isvalidPass(password)) {
+          return res.status(400).send({
+            status: false,
+            message: `Password length should be 8 - 15 characters`,
+          })
+  
+        }
+        let hashedPassword = await validator.hashedPassword(password)
+        
+        filter['password'] = hashedPassword
+      }
+      
+      
+  
+        //update
+        let updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, { $set: filter }, { new: true })
+        return res.status(200).send({ Status: true, msg: "Profile updated successfuly", data: updatedProfile })
+  
+  
+  
+  
+      } else { return res.status(403).send({ Status: false, msg: "User is not authorized to update requested profile" }) }
+    
+    }
+  
+    catch (err) {
+        console.log(err)
+      return res.status(500).send({ Status:false , msg:err.message})
+    }
+  
+  }
+  
+  
 
 module.exports.getUserById = getUserById;
-module.exports.useLogin=useLogin
+module.exports.useLogin = useLogin
+module.exports.updateProfile = updateProfile 

@@ -1,19 +1,23 @@
 const bcrypt = require("bcryptjs/dist/bcrypt")
+const mongoose = require("mongoose")
 
 const isValid = (value) => {
-    if (typeof value != 'string')
-        return false
-    if (typeof value === 'undefined' || typeof value === null)
-        return false
-    if (typeof value === 'string' && value.trim().length > 0)
-        return true
+    if (typeof value != 'string'){return false}
+       
+    if (typeof value === 'undefined' || typeof value === null){return false}
+        
+    if (typeof value === 'string' && value.trim().length == 0){return false}
+       
+    return true
 }
 
 const isValidRequestBody = (body) => {
-    if (Object.keys(body).length == 0)
-        return false
-    else
-        return true
+    return (Object.keys(body).length > 0)
+      
+}
+
+const isValidFiles = function(requestFiles) {
+    return requestFiles.length > 0 
 }
 
 const isValidEmail = (email) => {
@@ -25,7 +29,7 @@ const isValidPincode = (pincode) => {
 }
 
 const isValidPhone = (phone) => {
-    return /^([+]\d{2})?\d{10}$/.test(phone)
+    return (/^[6-9]\d{9}$/.test(phone))
 }
 
 const hashedPassword = async (password) => {
@@ -41,11 +45,17 @@ const isValidImage = (image) => {
 }
 
 const isvalidPass = (password) => {
-    return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/.test(password)
-    //this regex we can use for validating password
-    //6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter  
+   if(password.length>15 || password.length<8){return false}
+   return true
+   
 }
 
+const isValidObjectId = (ObjectId) => {
+    return mongoose.Types.ObjectId.isValid(ObjectId)
+}
+const isValidNumber = function(value) {
+    return Object.prototype.toString.call(value) === "[object Number]"
+}
 module.exports = {
     isValid,
     isValidEmail,
@@ -54,5 +64,8 @@ module.exports = {
     isValidPhone,
     hashedPassword,
     isvalidPass,
-    isValidImage
+    isValidImage,
+    isValidObjectId,
+    isValidFiles,
+    isValidNumber
 }
