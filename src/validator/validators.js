@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs/dist/bcrypt")
 const mongoose = require("mongoose")
 
 const isValid = (value) => {
-    if (typeof value != 'string'){return false}
+    
        
     if (typeof value === 'undefined' || typeof value === null){return false}
         
@@ -54,8 +54,13 @@ const isValidObjectId = (ObjectId) => {
     return mongoose.Types.ObjectId.isValid(ObjectId)
 }
 const isValidNumber = function(value) {
-    return Object.prototype.toString.call(value) === "[object Number]"
+    return (!isNaN(value) && value > 0)
 }
+const isValidBoolean = (value) =>{
+    return (typeof value == 'boolean')
+}
+
+
 module.exports = {
     isValid,
     isValidEmail,
@@ -67,5 +72,6 @@ module.exports = {
     isValidImage,
     isValidObjectId,
     isValidFiles,
-    isValidNumber
+    isValidNumber,
+    isValidBoolean
 }
