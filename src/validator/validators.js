@@ -57,10 +57,22 @@ const isValidNumber = function(value) {
     return (!isNaN(value) && value > 0)
 }
 const isValidBoolean = (value) =>{
-    return (typeof value == 'boolean')
+    return (typeof value === 'boolean')
 }
 
+const isValidSize = (Arr) => {
+    let newArr = []
+    if(!Arr.length > 0)
+    return false
 
+    for(let i =  0 ; i< Arr.length ; i++) {
+        if(!["S", "XS","M","X", "L","XXL", "XL"].includes(Arr[i].toUpperCase())) {
+        return false
+    }
+    newArr.push(Arr[i].toUpperCase())
+    }
+return newArr
+}
 module.exports = {
     isValid,
     isValidEmail,
@@ -73,5 +85,6 @@ module.exports = {
     isValidObjectId,
     isValidFiles,
     isValidNumber,
-    isValidBoolean
+    isValidBoolean,
+    isValidSize
 }

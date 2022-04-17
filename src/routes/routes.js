@@ -12,9 +12,14 @@ router.get('/user/:userId/user',auth.auth ,userController.getUserById)
 router.put('/user/:userId/profile',auth.auth,userController.updateProfile)
 
 //products related
-router.post('/products',productController.createProduct)
-router.get('/products/:productId',productController.getProductById)
-router.delete('/products/:productId',productController.deleteProductById)
+// productApis..................
+router.post('/products', productController.createProduct)
+router.get('/products', productController.getProduct)
+router.get('/products/:productId', productController.getProductById)
+router.put('/products/:productId', productController.updateProductById)
+router.delete('/products/:productId', productController.deleteProductById)
+
+module.exports = router
 
 
 
