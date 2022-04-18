@@ -206,7 +206,7 @@ const useLogin = async function (req, res) {
           expiresIn: "30m"
         }
       );
-      res.setHeader("x-api-key", token)
+      res.setHeader("Authorization", "Bearer"+" "+token)
       res.status(200).send({ status: true, data: { userId: user._id, token: token } })
 
     } else {

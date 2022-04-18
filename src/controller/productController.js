@@ -178,18 +178,20 @@ module.exports.createProduct = createProduct
 const getProduct = async (req, res) => {
 
     let { size, name, priceGreaterThan, priceLessThan } = req.query
+   console.log( req.query)
     let filters = { isDeleted: false, deletedAt: null }
 
 
     if (req.query.hasOwnProperty('size')) {
 
-        let validSizes = validate.isValidSize(size)
+        let validSizes = validate.isValidSize(JSON.parse(req.query.availableSizes))
+        
         if (!validSizes) {
             return res
                 .status(400)
                 .send({ status: false, message: `please Provide Available Size from ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
         }
-        filters['availableSizes'] = { $in: validSizes }
+        filters['size'] = { $in: validSizes }
     }
 
     if ('name' in req.query) {
@@ -321,7 +323,7 @@ const updateProductById = async (req, res) => {
         }
 
 
-
+ 
         if (requestBody.hasOwnProperty('title')) {
             if (!validate.isValid(title)) {
                 return res
@@ -372,7 +374,7 @@ const updateProductById = async (req, res) => {
 
 
         if (requestBody.hasOwnProperty('isFreeShipping')) {
-            if (validate.isValidBoolean(JSON.parse(isFreeShipping))) {
+            if (!validate.isValidBoolean(JSON.parse(isFreeShipping))) {
                 return res
                     .status(400)
                     .send({ Status: false, msg: "Please provide a valid boolean value" })
@@ -448,7 +450,7 @@ const updateProductById = async (req, res) => {
 
         console.log(updatedproductData)
 
-        let upadateduser = await productModel.findOneAndUpdate(
+        let upadatedProduct = await productModel.findOneAndUpdate(
             { _id: productId },
             updatedproductData,
             { new: true }
@@ -456,7 +458,7 @@ const updateProductById = async (req, res) => {
 
         return res
             .status(200)
-            .send({ status: true, msg: "Product updated successfully", data: upadateduser });
+            .send({ status: true, msg: "Product updated successfully", data: upadatedProduct });
 
     } catch (err) {
         res.status(500)

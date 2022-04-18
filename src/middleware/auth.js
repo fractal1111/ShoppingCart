@@ -6,9 +6,17 @@ const jwt = require("jsonwebtoken");
     let auth = async function(req,res,next){
 
         try{
-        let token = req.headers["x-api-key"]
-        if(token){
-            let decodedToken = jwt.verify(token ,  "fifth project" )      
+        let bearerToken = req.headers.authorization
+        console.log(bearerToken)
+      
+      
+      
+        if(bearerToken){
+            token = bearerToken.split(" ")
+
+         
+         
+            let decodedToken = jwt.verify(token[1] ,  "fifth project" )      
             if(decodedToken){
 
            req.userId = decodedToken.userId
