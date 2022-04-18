@@ -19,13 +19,20 @@ const register = async (req, res) => {
     let files = req.files;
     let uploadedFileURL
 
-    console.log(validator.isValid(fname))
+  
 
     if (!validator.isValid(fname)) {
+     
       return res
         .status(400)
         .send({ Status: false, Message: 'invalid First Name' })
     }
+
+    if(!validator.isValidCharacters(fname)){
+      return res
+      .status(400)
+      .send({Status:false , msg:"This attribute can only have letters as input"})}
+    
 
 
     if (!validator.isValid(lname)) {
@@ -34,6 +41,13 @@ const register = async (req, res) => {
         .send({ Status: false, message: 'invalid last Name' })
     }
 
+    if(!validator.isValidCharacters(lname)){
+      return res
+      .status(400)
+      .send({Status:false , msg:"This attribute can only have letters as input"})}
+    
+   
+   
     if (!validator.isValid(email)) {
       return res
         .status(400)
@@ -53,10 +67,13 @@ const register = async (req, res) => {
         .send({ status: false, message: `This email ${email} is Already In Use` })
     }
 
+    if(!validator.isValid(phone)){
+      return res.status(400).send({Status:false , msg:"Please provide phone number"})
+    }
     if (!validator.isValidPhone(phone)) {
       return res
         .status(400)
-        .send({ status: false, message: 'Enter A valid Mobile Nummber' })
+        .send({ status: false, message: 'Enter A valid phone Nummber' })
     }
 
     let isPhoneExist = await userModel.findOne({ phone })
@@ -66,7 +83,7 @@ const register = async (req, res) => {
         .send({ status: false, message: `This Phone ${phone} No. is Already In Use` })
     }
 
-    if (!validator.isValid(password.trim())) {
+    if (!validator.isValid(password)) {
       return res
         .status(400)
         .send({ status: false, message: 'password Is Required' })
@@ -90,35 +107,47 @@ const register = async (req, res) => {
     if (!validator.isValid(address['shipping']['street'])) {
       return res
         .status(400)
-        .send({ status: false, message: 'invalid Shipping Street' })
+        .send({ status: false, message: 'Shipping Street is required' })
     }
 
     if (!validator.isValid(address['shipping']['city'])) {
       return res
         .status(400)
-        .send({ status: false, message: 'invalid Shipping city' })
+        .send({ status: false, message: 'Shipping city is required' })
     }
 
+    
+    
+    if (!validator.isValid(address['shipping']['pincode'])) {
+      return res
+        .status(400)
+        .send({ status: false, message: 'Shipping Pincode is required' })
+    }
     if (!validator.isValidPincode(parseInt(address['shipping']['pincode']))) {
       return res
         .status(400)
-        .send({ status: false, message: 'invalid Shipping Pincode' })
+        .send({ status: false, message: 'Invalid pincode' })
     }
 
     if (!validator.isValid(address['billing']['street'])) {
       return res
         .status(400)
-        .send({ status: false, message: 'invalid billing Street' })
+        .send({ status: false, message: 'Billing Street is required' })
     }
 
     if (!validator.isValid(address['billing']['city'])) {
-      return res.status(400).send({ status: false, message: 'invalid billing city' })
+      return res.status(400).send({ status: false, message: 'Billing city is required' })
     }
 
+    if (!validator.isValid(address['billing']['pincode'])) {
+      return res
+        .status(400)
+        .send({ status: false, message: 'Billing Pincode is required' })
+    }
     if (!validator.isValidPincode(parseInt(address['billing']['pincode']))) {
       return res
         .status(400)
-        .send({ status: false, message: 'invalid billing Pincode' })
+        .send({ status: false, message: 'Invalid pincode' })
     }
 
     //UploadingFile..............................................................
@@ -127,14 +156,14 @@ const register = async (req, res) => {
       if (!validator.isValidImage(files[0])) {
         return res
           .status(400)
-          .send({ status: false, message: `invalid image type` })
+          .send({ status: false, msg: `invalid image type` })
       }
       uploadedFileURL = await aws.uploadFile(files[0]);
     }
     else {
       return res
         .status(400)
-        .send({ status: false, msg: "No file to write" });
+        .send({ status: false, msg: "Please provide a profile image" });
     }
 
     let finalData = {
@@ -403,6 +432,13 @@ const updateProfile = async function (req, res) {
         return res
         .status(400)
         .send({Status:false , msg:"Please enter a name"})}
+        if(!validator.isValidCharacters(fname)){
+          return res
+          .status(400)
+          .send({Status:false , msg:"This attribute can only have letters as input"})}
+        
+        
+        
         
         filter['fname'] = fname
       }
@@ -414,6 +450,11 @@ const updateProfile = async function (req, res) {
           return res
           .status(400)
           .send({Status:false , msg:"Please enter a last name"})}
+          if(!validator.isValidCharacters(lname)){
+            return res
+            .status(400)
+            .send({Status:false , msg:"This attribute can only have letters as input"})}
+          
           
           filter['lname'] = lname
         }
@@ -421,10 +462,12 @@ const updateProfile = async function (req, res) {
 
       //address 
     
-      if (address.shipping != undefined) {
+     
 
+      if(requestBody.hasOwnProperty('address')){
 
-
+       if(address.shipping != undefined){
+       
         if (validator.isValid(address.shipping.street)) {
           filter['address']['shipping']['street'] = address.shipping.street
         };
@@ -444,18 +487,16 @@ const updateProfile = async function (req, res) {
           filter['address']['shipping']['pincode'] = address.shipping.pincode
         };
         console.log(filter)
+      
       }
-
 
       // address billing
 
-
-      if(address.billing != undefined){
-      
-        if(address.billing.hasOwnProperty('street')){
-        if (!validator.isValid(address.billing.street)) {return res.status(400).send({Status:false , msg:"Please enter street name"})}
-          filter['address'] = address
-        };
+       if(address.billing != undefined){
+       
+      if (validator.isValid(address.billing.street)) {
+        filter['address']['billing']['street'] = address.billing.street
+      }
 
      
      
@@ -474,10 +515,11 @@ const updateProfile = async function (req, res) {
         }
       
       }
+    }
 
       // password
     if(requestBody.hasOwnProperty('password')){
-      if (validator.isValid(password)) {
+      if (!validator.isValid(password)) {
         return res
         .status(400)
         .send({Status:false , msg : "Please enter new password"})

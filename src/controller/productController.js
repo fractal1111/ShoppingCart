@@ -13,7 +13,7 @@ const createProduct = async (req, res) => {
         }
 
         let files = req.files
-        if (files && files.length > 0) {
+        if (files && files.length > 0) {                  //also can use isValidFiles
             if (!validate.isValidImage(files[0])) {
                 return res
                     .status(400)
@@ -56,11 +56,21 @@ const createProduct = async (req, res) => {
                 .send({ status: false, message: `invalid Discription` })
         }
 
-        if (!validate.isValidNumber(parseInt(price))) { ///////
+        
+        if (!validate.isValid(price)) {
+            return res
+                .status(400)
+                .send({ msg: "Pleae provide price field" })
+        }
+
+
+
+        if (!validate.isValidNumber(parseInt(price))) {
             return res
                 .status(400)
                 .send({ status: false, message: `price attribute should be Number/ decimal Number Only` })
         }
+
 
         if (!validate.isValid(currencyId)) {
             return res
@@ -90,14 +100,19 @@ const createProduct = async (req, res) => {
 
 
 
-        if (!validate.isValidBoolean(JSON.parse(isFreeShipping))) {
+
+
+        if (!validate.isValidBoolean((isFreeShipping))) {
             return res
                 .status(400)
                 .send({ status: false, message: `is Free Shipping Should Be a Boolean value` })
         }
 
 
-        if (!validate.isValid(availableSizes)) { return res.status(400).send({ Staus: false, msg: "Please provide AvailableSizes field" }) }
+        if (!validate.isValid(availableSizes)) {
+             return res
+             .status(400)
+             .send({ Staus: false, msg: "Please provide AvailableSizes field" }) }
 
 
         availableSizesArr = JSON.parse(availableSizes)
@@ -129,7 +144,7 @@ const createProduct = async (req, res) => {
                 return res.status(400).send({ status: false, message: `Invalid installments. should be Number only` })
             }
         }
-        console.log(style)
+
 
         if (style) {
             if (!validate.isValid(style)) { return res.status(400).send({ Status: false, msg: "Please input style" }) }
@@ -178,14 +193,14 @@ module.exports.createProduct = createProduct
 const getProduct = async (req, res) => {
 
     let { size, name, priceGreaterThan, priceLessThan } = req.query
-   console.log( req.query)
+    console.log(req.query)
     let filters = { isDeleted: false, deletedAt: null }
 
 
     if (req.query.hasOwnProperty('size')) {
 
         let validSizes = validate.isValidSize(JSON.parse(req.query.availableSizes))
-        
+
         if (!validSizes) {
             return res
                 .status(400)
@@ -262,18 +277,28 @@ const updateProductById = async (req, res) => {
         let requestBody = JSON.parse(JSON.stringify(req.body));
         let productId = req.params.productId;
         let files = req.files;
+    
+        
 
-        if (!validate.isValidObjectId(productId)) {
+
+        
+      if(!(validate.isValidRequestBody(requestBody)||req.hasOwnProperty('files'))){
+          return res
+          .status(400)
+          .send({Statuss:false , msg:"Please give input in request "})}
+      
+        
+          if (!validate.isValidObjectId(productId)) {
             return res
                 .status(404)
                 .send({ status: false, msg: "productId not found" });
         }
-        let product = await productModel.findOne({ productId, isDeleted: false });
+        let product = await productModel.findOne({ _id:productId, isDeleted:false });
 
         if (!product) {
             return res
                 .status(404)
-                .send({ status: false, msg: "product not found" });
+                .send({ status: false, msg: "product not found or has been deleted" });
         }
 
         let {
@@ -309,6 +334,11 @@ const updateProductById = async (req, res) => {
         }
 
         if (requestBody.hasOwnProperty("price")) {
+            if (!validate.isValid(price)) {
+                return res
+                    .status(400)
+                    .send({ msg: "Please enter price" })
+            }
 
             if (!validate.isValidNumber(parseInt(price))) {
                 return res
@@ -323,7 +353,7 @@ const updateProductById = async (req, res) => {
         }
 
 
- 
+
         if (requestBody.hasOwnProperty('title')) {
             if (!validate.isValid(title)) {
                 return res
@@ -374,7 +404,14 @@ const updateProductById = async (req, res) => {
 
 
         if (requestBody.hasOwnProperty('isFreeShipping')) {
-            if (!validate.isValidBoolean(JSON.parse(isFreeShipping))) {
+           
+            if (!validate.isValid(isFreeShipping)) {
+                return res
+                    .status(400)
+                    .send({ msg: "Pleae enter isFreeShipping" })
+            }
+           
+            if (!validate.isValidBoolean(isFreeShipping)) {
                 return res
                     .status(400)
                     .send({ Status: false, msg: "Please provide a valid boolean value" })
@@ -388,10 +425,16 @@ const updateProductById = async (req, res) => {
             updatedproductData["$set"]["isFreeShipping"] = isFreeShipping;
         }
 
+        
+        
         if (requestBody.hasOwnProperty('availableSizes')) {
 
-            console.log(validate.isValidSize(JSON.parse(availableSizes)))
-            if (!validate.isValidSize(JSON.parse(availableSizes))) {
+          if(!validate.isValid(availableSizes)){
+              return res
+              .status(400)
+              .send({Status:false , msg : "Please provide available sizes"})}
+           
+              if (!validate.isValidSize(JSON.parse(availableSizes))) {
                 return res
                     .status(400)
                     .send({ Status: false, msg: `please Provide Available Size from ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
@@ -424,8 +467,9 @@ const updateProductById = async (req, res) => {
         }
 
 
-
+      
         if (validate.isValidFiles(files)) {
+            
             if (!validate.isValidImage(files[0])) {
                 return res
                     .status(400)
@@ -444,12 +488,13 @@ const updateProductById = async (req, res) => {
             if (!Object.prototype.hasOwnProperty.call(updatedproductData, "$set"))
                 updatedproductData["$set"] = {};
 
-            updatedproductData["$set"]["productImage"] = productImage;
+            updatedproductData["$set"]["productImage"] = productImageLink;
+        
         }
 
-
-        console.log(updatedproductData)
-
+      
+        if(Object.keys(updatedproductData).length==0){return res.status(400).send({Status:false , msg:"no data to update"})}
+        
         let upadatedProduct = await productModel.findOneAndUpdate(
             { _id: productId },
             updatedproductData,
@@ -461,6 +506,7 @@ const updateProductById = async (req, res) => {
             .send({ status: true, msg: "Product updated successfully", data: upadatedProduct });
 
     } catch (err) {
+       
         res.status(500)
             .send({ status: false, msg: err.message })
     }

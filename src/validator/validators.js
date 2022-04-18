@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 
 const isValid = (value) => {
     
-       
+      if (typeof value != 'string') return false
     if (typeof value === 'undefined' || typeof value === null){return false}
         
     if (typeof value === 'string' && value.trim().length == 0){return false}
@@ -57,7 +57,7 @@ const isValidNumber = function(value) {
     return (!isNaN(value) && value > 0)
 }
 const isValidBoolean = (value) =>{
-    return (typeof value === 'boolean')
+    return (value === 'true' || value==='false')
 }
 
 const isValidSize = (Arr) => {
@@ -73,6 +73,12 @@ const isValidSize = (Arr) => {
     }
 return newArr
 }
+
+
+
+const isValidCharacters=(value) =>{
+return  /^[A-Za-z]+$/.test(value)
+}
 module.exports = {
     isValid,
     isValidEmail,
@@ -86,5 +92,6 @@ module.exports = {
     isValidFiles,
     isValidNumber,
     isValidBoolean,
-    isValidSize
+    isValidSize,
+    isValidCharacters
 }
