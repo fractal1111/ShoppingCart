@@ -206,7 +206,7 @@ const useLogin = async function (req, res) {
           expiresIn: "30m"
         }
       );
-      res.setHeader("Authorization", "Bearer"+" "+token)
+     // res.setHeader("Authorization", "Bearer"+" "+token)
       res.status(200).send({ status: true, data: { userId: user._id, token: token } })
 
     } else {
@@ -450,7 +450,7 @@ const updateProfile = async function (req, res) {
       // address billing
 
 
-      
+      if(address.billing != undefined){
       
         if(address.billing.hasOwnProperty('street')){
         if (!validator.isValid(address.billing.street)) {return res.status(400).send({Status:false , msg:"Please enter street name"})}
@@ -473,7 +473,7 @@ const updateProfile = async function (req, res) {
           filter['address']['billing']['pincode'] = address.billing.pincode
         }
       
-
+      }
 
       // password
     if(requestBody.hasOwnProperty('password')){
