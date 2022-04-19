@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
                 .send({ status: false, message: `invalid Discription` })//
         }
 
-        
+
         if (!validate.isValid(price)) {
             return res
                 .status(400)
@@ -99,22 +99,23 @@ const createProduct = async (req, res) => {
 
 
 
-if(isFreeShipping){
+        if (isFreeShipping) {
 
 
-        if (!validate.isValidBoolean((isFreeShipping))) {
+            if (!validate.isValidBoolean((isFreeShipping))) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: `is Free Shipping Should Be a Boolean value` })
+            }
+        }
+
+
+
+        if (!validate.isValid(availableSizes)) {
             return res
                 .status(400)
-                .send({ status: false, message: `is Free Shipping Should Be a Boolean value` })
+                .send({ Staus: false, msg: "Please provide AvailableSizes field" })
         }
-    }
-
-
-        
-        if (!validate.isValid(availableSizes)) {
-             return res
-             .status(400)
-             .send({ Staus: false, msg: "Please provide AvailableSizes field" }) }
 
 
         availableSizesArr = JSON.parse(availableSizes)
@@ -260,18 +261,33 @@ const getProduct = async (req, res) => {
 
     }
 
-    // console.log(filters)
 
-    const dataByFilters = await productModel.find(filters) // sort
-    
-    if(dataByFilters.length == 0){
-        return res
-        .status(404)
-        .send({Status:false , msg:"no products wiht the given queries were found"})
-    
-    
+
+    let sort = {}
+
+    if ('priceSort' in req.query) {
+
+        if (!['-1', '1'].includes(priceSort) || isNaN(priceSort)) {
+            return res
+                .status(400)
+                .send({ status: false, message: `Please Enter valid Sorting ie[-1, 1]` })
+        }
+        sort['price'] = priceSort
     }
-    
+
+
+    const dataByFilters = await productModel.find(filters).sort(sort)
+
+
+
+    if (dataByFilters.length == 0) {
+        return res
+            .status(404)
+            .send({ Status: false, msg: "no products with the given queries were found" })
+
+
+    }
+
     return res
         .status(200)
         .send({ status: true, message: `Success`, Data: dataByFilters })
@@ -288,23 +304,24 @@ const updateProductById = async (req, res) => {
         let requestBody = JSON.parse(JSON.stringify(req.body));
         let productId = req.params.productId;
         let files = req.files;
-    
-        
 
 
-        
-      if(!(validate.isValidRequestBody(requestBody)||req.hasOwnProperty('files'))){
-          return res
-          .status(400)
-          .send({Statuss:false , msg:"Please give input in request "})}
-      
-        
-          if (!validate.isValidObjectId(productId)) {
+
+
+
+        if (!(validate.isValidRequestBody(requestBody) || req.hasOwnProperty('files'))) {
+            return res
+                .status(400)
+                .send({ Statuss: false, msg: "Please give input in request " })
+        }
+
+
+        if (!validate.isValidObjectId(productId)) {
             return res
                 .status(404)
                 .send({ status: false, msg: "productId not found" });
         }
-        let product = await productModel.findOne({ _id:productId, isDeleted:false });
+        let product = await productModel.findOne({ _id: productId, isDeleted: false });
 
         if (!product) {
             return res
@@ -415,13 +432,13 @@ const updateProductById = async (req, res) => {
 
 
         if (requestBody.hasOwnProperty('isFreeShipping')) {
-           
+
             if (!validate.isValid(isFreeShipping)) {
                 return res
                     .status(400)
                     .send({ msg: "Pleae enter isFreeShipping" })
             }
-           
+
             if (!validate.isValidBoolean(isFreeShipping)) {
                 return res
                     .status(400)
@@ -436,16 +453,17 @@ const updateProductById = async (req, res) => {
             updatedproductData["$set"]["isFreeShipping"] = isFreeShipping;
         }
 
-        
-        
+
+
         if (requestBody.hasOwnProperty('availableSizes')) {
 
-          if(!validate.isValid(availableSizes)){
-              return res
-              .status(400)
-              .send({Status:false , msg : "Please provide available sizes"})}
-           
-              if (!validate.isValidSize(JSON.parse(availableSizes))) {
+            if (!validate.isValid(availableSizes)) {
+                return res
+                    .status(400)
+                    .send({ Status: false, msg: "Please provide available sizes" })
+            }
+
+            if (!validate.isValidSize(JSON.parse(availableSizes))) {
                 return res
                     .status(400)
                     .send({ Status: false, msg: `please Provide Available Size from ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
@@ -478,9 +496,9 @@ const updateProductById = async (req, res) => {
         }
 
 
-      
+
         if (validate.isValidFiles(files)) {
-            
+
             if (!validate.isValidImage(files[0])) {
                 return res
                     .status(400)
@@ -500,12 +518,12 @@ const updateProductById = async (req, res) => {
                 updatedproductData["$set"] = {};
 
             updatedproductData["$set"]["productImage"] = productImageLink;
-        
+
         }
 
-      
-        if(Object.keys(updatedproductData).length==0){return res.status(400).send({Status:false , msg:"no data to update"})}
-        
+
+        if (Object.keys(updatedproductData).length == 0) { return res.status(400).send({ Status: false, msg: "no data to update" }) }
+
         let upadatedProduct = await productModel.findOneAndUpdate(
             { _id: productId },
             updatedproductData,
@@ -517,7 +535,7 @@ const updateProductById = async (req, res) => {
             .send({ status: true, msg: "Product updated successfully", data: upadatedProduct });
 
     } catch (err) {
-       
+
         res.status(500)
             .send({ status: false, msg: err.message })
     }

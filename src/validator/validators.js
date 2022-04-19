@@ -2,22 +2,22 @@ const bcrypt = require("bcryptjs/dist/bcrypt")
 const mongoose = require("mongoose")
 
 const isValid = (value) => {
-    
-      if (typeof value != 'string') return false
-    if (typeof value === 'undefined' || typeof value === null){return false}
-        
-    if (typeof value === 'string' && value.trim().length == 0){return false}
-       
+
+    if (typeof value != 'string') return false
+    if (typeof value === 'undefined' || typeof value === null) { return false }
+
+    if (typeof value === 'string' && value.trim().length == 0) { return false }
+
     return true
 }
 
 const isValidRequestBody = (body) => {
     return (Object.keys(body).length > 0)
-      
+
 }
 
-const isValidFiles = function(requestFiles) {
-    return requestFiles.length > 0 
+const isValidFiles = function (requestFiles) {
+    return requestFiles.length > 0
 }
 
 const isValidEmail = (email) => {
@@ -33,51 +33,51 @@ const isValidPhone = (phone) => {
 }
 
 const hashedPassword = async (password) => {
-   let p1 =  await bcrypt.hash(password, 10)
-   return p1
+    let p1 = await bcrypt.hash(password, 10)
+    return p1
 }
 
 const isValidImage = (image) => {
-    if ( /.*\.(jpeg|jpg|png)$/.test(image.originalname) ) {
+    if (/.*\.(jpeg|jpg|png)$/.test(image.originalname)) {
         return true
     }
     return false
 }
 
 const isvalidPass = (password) => {
-   if(password.length>15 || password.length<8){return false}
-   return true
-   
+    if (password.length > 15 || password.length < 8) { return false }
+    return true
+
 }
 
 const isValidObjectId = (ObjectId) => {
     return mongoose.Types.ObjectId.isValid(ObjectId)
 }
-const isValidNumber = function(value) {
+const isValidNumber = function (value) {
     return (!isNaN(value) && value > 0)
 }
-const isValidBoolean = (value) =>{
-    return (value === 'true' || value==='false')
+const isValidBoolean = (value) => {
+    return (value === 'true' || value === 'false')
 }
 
 const isValidSize = (Arr) => {
     let newArr = []
-    if(!Arr.length > 0)
-    return false
-
-    for(let i =  0 ; i< Arr.length ; i++) {
-        if(!["S", "XS","M","X", "L","XXL", "XL"].includes(Arr[i].toUpperCase())) {
+    if (!Arr.length > 0)
         return false
+
+    for (let i = 0; i < Arr.length; i++) {
+        if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(Arr[i].toUpperCase())) {
+            return false
+        }
+        newArr.push(Arr[i].toUpperCase())
     }
-    newArr.push(Arr[i].toUpperCase())
-    }
-return newArr
+    return newArr
 }
 
 
 
-const isValidCharacters=(value) =>{
-return  /^[A-Za-z]+$/.test(value)
+const isValidCharacters = (value) => {
+    return /^[A-Za-z]+$/.test(value)
 }
 module.exports = {
     isValid,
