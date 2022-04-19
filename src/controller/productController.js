@@ -43,7 +43,7 @@ const createProduct = async (req, res) => {
         if (!validate.isValid(title)) {
             return res
                 .status(400)
-                .send({ status: false, message: `title is required` })
+                .send({ status: false, message: `title is required` })//
         }
 
         let dupliTitle = await productModel.findOne({ title: title }) //, isDeleted:False
@@ -53,7 +53,7 @@ const createProduct = async (req, res) => {
         if (!validate.isValid(description)) {
             return res
                 .status(400)
-                .send({ status: false, message: `invalid Discription` })
+                .send({ status: false, message: `invalid Discription` })//
         }
 
         
@@ -99,7 +99,7 @@ const createProduct = async (req, res) => {
 
 
 
-
+if(isFreeShipping){
 
 
         if (!validate.isValidBoolean((isFreeShipping))) {
@@ -107,8 +107,10 @@ const createProduct = async (req, res) => {
                 .status(400)
                 .send({ status: false, message: `is Free Shipping Should Be a Boolean value` })
         }
+    }
 
 
+        
         if (!validate.isValid(availableSizes)) {
              return res
              .status(400)
@@ -199,7 +201,7 @@ const getProduct = async (req, res) => {
 
     if (req.query.hasOwnProperty('size')) {
 
-        let validSizes = validate.isValidSize(JSON.parse(req.query.availableSizes))
+        let validSizes = validate.isValidSize(JSON.parse(req.query.size))
 
         if (!validSizes) {
             return res
@@ -260,7 +262,16 @@ const getProduct = async (req, res) => {
 
     // console.log(filters)
 
-    const dataByFilters = await productModel.find(filters)
+    const dataByFilters = await productModel.find(filters) // sort
+    
+    if(dataByFilters.length == 0){
+        return res
+        .status(404)
+        .send({Status:false , msg:"no products wiht the given queries were found"})
+    
+    
+    }
+    
     return res
         .status(200)
         .send({ status: true, message: `Success`, Data: dataByFilters })

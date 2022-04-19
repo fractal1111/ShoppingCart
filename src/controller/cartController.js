@@ -36,7 +36,7 @@ const createCart = async function (req, res) {
         const { cartId, productId } = requestBody;
 
         if ('cartId' in requestBody) {
-            cartId-cartId.trim()
+           
 
             if (!validator.isValidObjectId(cartId)) {
                 return res
@@ -50,7 +50,7 @@ const createCart = async function (req, res) {
                 .status(400)
                 .send({ status: false, msg: "enter the productId" });
         }
-productId=protucdId.trim()
+
         
 if (!validator.isValidObjectId(productId)) {
             return res
@@ -218,7 +218,7 @@ const updateCart = async (req, res) => {
                 .status(400)
                 .send({ status: false, Message: `Please Enter A Cart ID` })
         }
-      cartId = cartId.trim()
+      
      
      
       if (!validator.isValidObjectId(cartId)) {
@@ -237,10 +237,7 @@ const updateCart = async (req, res) => {
             .send({ status: false, Message: `CartId Should Be present` })
     }
 
-    // const isCartExist = await cartModel.findOne({ userId: userId })
-    // if (!isCartExist) {
-    //     return res.status(404).send({ status: false, message: `Cart Not Found Please Check Cart Id` })
-    // }
+    
 
     if (!validator.isValid(productId)) {
         return res
@@ -248,21 +245,28 @@ const updateCart = async (req, res) => {
             .send({ status: false, Message: "enter the productId" });
     }
 
-  productId = productId.trim()
+  
    
-    if (!validator.isValidObjectId(productId.trim())) {
+    if (!validator.isValidObjectId(productId)) {
         return res
             .status(400)
             .send({ status: false, Message: "enter a valid productId" });
     }
 
-    const isProductExist = await productModel.findOne({ _id: productId.trim(), isDeleted: false })
+    const isProductExist = await productModel.findOne({ _id: productId, isDeleted: false })
     if (!isProductExist) {
         return res.status(404).send({ status: false, Message: `Product Not Exist` })
     }
 
     if (!req.body.hasOwnProperty('removeProduct')) {
         return res.status(400).send({ status: false, message: "removeProduct key Should Be present" })
+    }
+
+console.log(removeProduct)
+    if (!validator.isValid(removeProduct)) {
+        return res
+            .status(400)
+            .send({ status: false, Message: "enter the value for removeProduct" });
     }
 
     if (!(removeProduct == 1 || removeProduct == 0)) {

@@ -28,14 +28,14 @@ const register = async (req, res) => {
         .send({ Status: false, Message: 'invalid First Name' })
     }
 
-    if(!validator.isValidCharacters(fname)){
+    if(!validator.isValidCharacters(fname.trim())){
       return res
       .status(400)
       .send({Status:false , msg:"This attribute can only have letters as input"})}
     
 
 
-    if (!validator.isValid(lname)) {
+    if (!validator.isValid(lname.trim())) {
       return res
         .status(400)
         .send({ Status: false, message: 'invalid last Name' })
