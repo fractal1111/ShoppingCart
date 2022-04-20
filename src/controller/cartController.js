@@ -215,7 +215,7 @@ const updateCart = async (req, res) => {
 
             const isCartExist = await cartModel.findOne({ userId: userId })
             if (!isCartExist) {
-                return res.status(404).send({ status: false, message: `Cart Not Found Please Check Cart Id` })
+                return res.status(404).send({ status: false, message: `Cart Not Found Please Check user Id` })
             }
 
 
