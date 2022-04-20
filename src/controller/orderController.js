@@ -41,6 +41,28 @@ const createOrder = async (req, res) => {
             .send({ status: false, message: ` invalid input - Items` })
     }
 
+
+    for (let i = 0; i < items.length; i++) {
+
+        if (!validators.isValidObjectId(items[i].productId)) {
+            return res
+                .status(400)
+                .send({ Status: false, msg: `${items[i].productId} is not a valid product id` })
+        }
+
+        else if (!validators.isValidNumber(parseInt(items[i].quantity))) {
+            return res
+                .status(400)
+                .send({ Status: false, msg: "Quantity should be a natural number" })
+        }
+
+
+
+    }
+
+
+
+
     if (!req.body.hasOwnProperty('totalPrice')) {
         return res
             .status(400)

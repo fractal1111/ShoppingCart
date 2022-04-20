@@ -199,7 +199,7 @@ const useLogin = async function (req, res) {
       return res.status(400).send({ status: false, msg: "data required for login" })
     }
     let email = req.body.email
-    let password = req.body.password.trim()
+    let password = req.body.password
 
     if (!validator.isValid(email)) {
       return res.status(400).send({ status: false, msg: "email is required" })
@@ -215,6 +215,8 @@ const useLogin = async function (req, res) {
       return res.status(400).send({ status: false, msg: "password is required" })
     }
 
+  password =password.trim()
+  
     let user = await userModel.findOne({ email })
 
     if (!user) {
@@ -343,7 +345,7 @@ const updateProfile = async function (req, res) {
         email,
         phone,
         password,
-        address,
+        address,  
 
       } = req.body
 
@@ -479,7 +481,7 @@ const updateProfile = async function (req, res) {
 
 
         if (validator.isValid(address.shipping.pincode)) {
-          if (!validator.isValiPincode(parseInt(pincode))) {
+          if (!validator.isValidPincode(parseInt(pincode))) {
             return res.status(400).send({ status: false, message: "pincode attribute should be a number" });
 
           }

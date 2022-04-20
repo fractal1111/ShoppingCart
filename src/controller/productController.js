@@ -36,7 +36,8 @@ const createProduct = async (req, res) => {
             isFreeShipping,
             style,
             availableSizes,
-            installments
+            installments,
+
         } = req.body
 
 
@@ -195,7 +196,7 @@ module.exports.createProduct = createProduct
 
 const getProduct = async (req, res) => {
 
-    let { size, name, priceGreaterThan, priceLessThan } = req.query
+    let { size, name, priceGreaterThan, priceLessThan ,priceSort } = req.query
     console.log(req.query)
     let filters = { isDeleted: false, deletedAt: null }
 
