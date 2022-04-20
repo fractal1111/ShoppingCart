@@ -241,7 +241,7 @@ const getProduct = async (req, res) => {
                 .status(400)
                 .send({ status: false, message: `invalid Input - Name` })
         }
-        filters['title'] = { $regex: name }
+        filters['title'] = { $regex: name ,$options: "i" }
 
     }
 

@@ -394,7 +394,7 @@ const deleteCart = async function (req, res) {
 
 
             let isCart = await cartModel.findOne({ userId: id })
-            if (!isCart) { return res.status(404).send({ Status: false, msg: "No cart exists For this user" }) }
+            if (!isCart) { return res.status(404).send({ Status: false, message: "No cart exists For this user" }) }
 
             let updatedCart = await cartModel.findOneAndUpdate({ userId: id },
                 { $set: { items: [], totalItems: 0, totalPrice: 0 } })
