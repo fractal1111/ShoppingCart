@@ -186,7 +186,7 @@ const updateCart = async (req, res) => {
         if (!validator.isValidObjectId(userId)) {
             return res
                 .status(400)
-                .send({ status: false, msg: "enter a valid userId" });
+                .send({ status: false, message: "enter a valid userId" });
         }
 
         const isUserExist = await userModel.findById(userId);
@@ -194,7 +194,7 @@ const updateCart = async (req, res) => {
         if (!isUserExist) {
             return res
                 .status(404)
-                .send({ status: false, msg: "user not found" });
+                .send({ status: false, message: "user not found" });
         }
 
         //authorization
@@ -208,7 +208,7 @@ const updateCart = async (req, res) => {
             if (!validator.isValidRequestBody(requestBody)) {
                 return res
                     .status(400)
-                    .send({ status: false, msg: `Invalid Request parameters` });
+                    .send({ status: false, message: `Invalid Request parameters` });
             }
 
             let { cartId, productId, removeProduct } = requestBody;
@@ -224,7 +224,7 @@ const updateCart = async (req, res) => {
                 if (!validator.isValid(cartId)) {
                     return res
                         .status(400)
-                        .send({ status: false, Message: `Please Enter A Cart ID` })
+                        .send({ status: false, message: `Please Enter A Cart ID` })
                 }
 
                 cartId = cartId.trim()
@@ -232,17 +232,17 @@ const updateCart = async (req, res) => {
                 if (!validator.isValidObjectId(cartId)) {
                     return res
                         .status(400)
-                        .send({ status: false, Message: `invalid Cart Id` })
+                        .send({ status: false, message: `invalid Cart Id` })
                 }
 
 
-                if (isCartExist._id != cartId) { return res.status(400).send({ Status: false, msg: "CartId and user do not match" }) }
+                if (isCartExist._id != cartId) { return res.status(400).send({ Status: false, message: "CartId and user do not match" }) }
 
 
             } else {
                 return res
                     .status(400)
-                    .send({ status: false, Message: `CartId Should Be present` })
+                    .send({ status: false, message: `CartId Should Be present` })
             }
 
 
@@ -250,7 +250,7 @@ const updateCart = async (req, res) => {
             if (!validator.isValid(productId)) {
                 return res
                     .status(400)
-                    .send({ status: false, Message: "enter the productId" });
+                    .send({ status: false, message: "enter the productId" });
             }
 
             productId = productId.trim()
@@ -258,12 +258,12 @@ const updateCart = async (req, res) => {
             if (!validator.isValidObjectId(productId)) {
                 return res
                     .status(400)
-                    .send({ status: false, Message: "enter a valid productId" });
+                    .send({ status: false, message: "enter a valid productId" });
             }
 
             const isProductExist = await productModel.findOne({ _id: productId, isDeleted: false })
             if (!isProductExist) {
-                return res.status(404).send({ status: false, Message: `Product Not Exist` })
+                return res.status(404).send({ status: false, message: `Product Not Exist` })
             }
 
             if (!req.body.hasOwnProperty('removeProduct')) {
@@ -274,7 +274,7 @@ const updateCart = async (req, res) => {
             if (!validator.isValidNumber(removeProduct)) {
                 return res
                     .status(400)
-                    .send({ status: false, Message: "enter the value for removeProduct" });
+                    .send({ status: false, message: "enter the value for removeProduct" });
             }
 
             if (!(removeProduct === 1 || removeProduct === 0)) {
@@ -299,7 +299,7 @@ const updateCart = async (req, res) => {
 
             }
 
-            if (count < 1) { return res.status(400).send({ Status: true, msg: "Product does not exist in cart" }) }
+            if (count < 1) { return res.status(400).send({ Status: true, message: "Product does not exist in cart" }) }
 
 
             for (let i = 0; i < itemList.length; i++) {
@@ -318,7 +318,7 @@ const updateCart = async (req, res) => {
                         )
                         return res
                             .status(200)
-                            .send({ status: true, msg: 'sucessfully removed product', Data: updatedCart })
+                            .send({ status: true, message: 'sucessfully removed product', Data: updatedCart })
                     }
 
                     if (removeProduct == 1 && itemList[i].quantity == 1) {
@@ -333,7 +333,7 @@ const updateCart = async (req, res) => {
                         )
                         return res
                             .status(200)
-                            .send({ status: true, msg: 'sucessfully removed product', Data: updatedCart })
+                            .send({ status: true, message: 'sucessfully removed product', Data: updatedCart })
 
                     }
 
@@ -348,7 +348,7 @@ const updateCart = async (req, res) => {
 
                         return res
                             .status(200)
-                            .send({ status: true, msg: 'sucessfully removed product quantity', Data: updatedCart })
+                            .send({ status: true, message: 'sucessfully removed product quantity', Data: updatedCart })
                     }
 
                 }
@@ -361,7 +361,7 @@ const updateCart = async (req, res) => {
         } else {
             return res
                 .status(403)
-                .send({ Status: false, msg: "user not authorized to update cart" })
+                .send({ Status: false, message: "user not authorized to update cart" })
         }
 
 
@@ -371,7 +371,7 @@ const updateCart = async (req, res) => {
     catch (err) {
         return res
             .status(400)
-            .send({ Status: false, msg: err.message })
+            .send({ Status: false, message: err.message })
     }
 
 
@@ -387,27 +387,27 @@ const deleteCart = async function (req, res) {
         if (!validator.isValidObjectId(id)) {
             return res
                 .status
-                .send({ Status: false, msg: "Please provide valid Object id" })
+                .send({ Status: false, message: "Please provide valid Object id" })
         }
 
         let user = await userModel.findById(id)
         if (!user) {
             return res
                 .status(404)
-                .send({ Status: false, msg: "User with this user id does not exist" })
+                .send({ Status: false, message: "User with this user id does not exist" })
         }
 
         if (id == req.userId) {
 
 
             let isCart = await cartModel.findOne({ userId: id })
-            if (!isCart) { return res.status(404).send({ Status: false, msg: "No cart exists For this user" }) }
+            if (!isCart) { return res.status(404).send({ Status: false, message: "No cart exists For this user" }) }
 
             let updatedCart = await cartModel.findOneAndUpdate({ userId: id },
                 { $set: { items: [], totalItems: 0, totalPrice: 0 } })
 
 
-            return res.status(200).send({ Status: true, msg: "Cart deleted successfuly" })
+            return res.status(200).send({ Status: true, message: "Cart deleted successfuly" })
 
 
 
@@ -416,13 +416,13 @@ const deleteCart = async function (req, res) {
         } else {
             return res
                 .status(403)
-                .send({ Status: false, msg: "User not authorized to delete cart" })
+                .send({ Status: false, message: "User not authorized to delete cart" })
         }
     }
     catch (err) {
         return res
             .status(500)
-            .send({ Status: false, msg: err.msg })
+            .send({ Status: false, message: err.msg })
     }
 
 }
@@ -437,7 +437,7 @@ const getById = async function (req, res) {
         if (!validator.isValidObjectId(id)) {
             return res
                 .status(400)
-                .send({ Status: false, msg: "Please enter valid Object Id" })
+                .send({ Status: false, message: "Please enter valid Object Id" })
         }
 
 
@@ -445,7 +445,7 @@ const getById = async function (req, res) {
         if (!user) {
             return res
                 .status(404)
-                .send({ Status: false, msg: "User does not exist" })
+                .send({ Status: false, message: "User does not exist" })
         }
 
         //Authorization
@@ -456,13 +456,13 @@ const getById = async function (req, res) {
             if (!isCart) {
                 return res
                     .status(404)
-                    .send({ Status: false, msg: "Cart not found" })
+                    .send({ Status: false, message: "Cart not found" })
             }
 
 
             return res
                 .status(200)
-                .send({ Status: true, msg: "Successfull", Data: isCart })
+                .send({ Status: true, message: "Successfull", Data: isCart })
 
 
 
@@ -472,14 +472,14 @@ const getById = async function (req, res) {
         } else {
             return res
                 .status(403)
-                .send({ Status: false, msg: "User not authorized to view requested cart" })
+                .send({ Status: false, message: "User not authorized to view requested cart" })
         }
 
     }
     catch (err) {
         return res
             .status(400)
-            .send({ Status: false, msg: err.message })
+            .send({ Status: false, message: err.message })
     }
 
 }

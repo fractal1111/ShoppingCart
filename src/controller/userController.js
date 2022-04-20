@@ -278,20 +278,20 @@ const getUserById = async function (req, res) {
 
       return res
         .status(200)
-        .send({ status: true, msg: "granted", data: findUser })
+        .send({ status: true, message: "granted", data: findUser })
 
 
     } else {
       return res
         .status(403)
-        .send({ Status: false, msg: "User not authorized to access requested id" })
+        .send({ Status: false, message: "User not authorized to access requested id" })
     }
 
   }
   catch (err) {
     return res
       .status(500)
-      .send({ status: false, msg: err.message })
+      .send({ status: false, message: err.message })
   }
 }
 
@@ -306,7 +306,7 @@ const updateProfile = async function (req, res) {
     if (!validator.isValidObjectId(userId)) {
       return res
         .status(400)
-        .send({ Status: false, msg: "Please enter valid user Id" })
+        .send({ Status: false, message: "Please enter valid user Id" })
     }
 
     
@@ -315,7 +315,7 @@ const updateProfile = async function (req, res) {
     if (!user) {
       return res
         .status(404)
-        .send({ Staus: false, msg: "User does not exist" })
+        .send({ Staus: false, message: "User Not found" })
     }
 
    
@@ -433,11 +433,11 @@ const updateProfile = async function (req, res) {
       if (!validator.isValid(fname)) {
         return res
         .status(400)
-        .send({Status:false , msg:"Please enter a name"})}
+        .send({Status:false , message:"Please enter a name"})}
         if(!validator.isValidCharacters(fname)){
           return res
           .status(400)
-          .send({Status:false , msg:"This attribute can only have letters as input"})}
+          .send({Status:false , message:"This attribute can only have letters as input"})}
         
         
         
@@ -451,11 +451,11 @@ const updateProfile = async function (req, res) {
         if (!validator.isValid(lname)) {
           return res
           .status(400)
-          .send({Status:false , msg:"Please enter a last name"})}
+          .send({Status:false , message:"Please enter a last name"})}
           if(!validator.isValidCharacters(lname)){
             return res
             .status(400)
-            .send({Status:false , msg:"This attribute can only have letters as input"})}
+            .send({Status:false , message:"This attribute can only have letters as input"})}
           
           
           filter['lname'] = lname
@@ -488,7 +488,7 @@ const updateProfile = async function (req, res) {
 
           filter['address']['shipping']['pincode'] = address.shipping.pincode
         };
-        console.log(filter)
+      
       
       }
 
@@ -524,7 +524,7 @@ const updateProfile = async function (req, res) {
       if (!validator.isValid(password)) {
         return res
         .status(400)
-        .send({Status:false , msg : "Please enter new password"})
+        .send({Status:false , message : "Please enter new password"})
       }
 
         if (!validator.isvalidPass(password)) {
@@ -543,18 +543,18 @@ const updateProfile = async function (req, res) {
 
       //update
       let updatedProfile = await userModel.findOneAndUpdate({ _id: userId }, { $set: filter }, { new: true })
-      return res.status(200).send({ Status: true, msg: "Profile updated successfuly", data: updatedProfile })
+      return res.status(200).send({ Status: true, message: "Profile updated successfuly", Data: updatedProfile })
 
 
 
 
-    } else { return res.status(403).send({ Status: false, msg: "User is not authorized to update requested profile" }) }
+    } else { return res.status(403).send({ Status: false, message: "User is not authorized to update requested profile" }) }
 
   }
 
   catch (err) {
     console.log(err)
-    return res.status(500).send({ Status: false, msg: err.message })
+    return res.status(500).send({ Status: false, message: err.message })
   }
 
 }

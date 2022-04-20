@@ -24,7 +24,7 @@ const createProduct = async (req, res) => {
         else {
             return res
                 .status(400)
-                .send({ status: false, msg: "No file to write" });
+                .send({ status: false, message: "No file to write" });
         }
 
         let {
@@ -49,7 +49,7 @@ const createProduct = async (req, res) => {
 
         let dupliTitle = await productModel.findOne({ title: title }) //, isDeleted:False
 
-        if (dupliTitle) { return res.status(400).send({ Status: false, msg: "product with this title already exists" }) }
+        if (dupliTitle) { return res.status(400).send({ Status: false, message: "product with this title already exists" }) }
 
         if (!validate.isValid(description)) {
             return res
@@ -61,7 +61,7 @@ const createProduct = async (req, res) => {
         if (!validate.isValid(price)) {
             return res
                 .status(400)
-                .send({ msg: "Pleae provide price field" })
+                .send({ message: "Pleae provide price field" })
         }
 
 
@@ -115,7 +115,7 @@ const createProduct = async (req, res) => {
         if (!validate.isValid(availableSizes)) {
             return res
                 .status(400)
-                .send({ Staus: false, msg: "Please provide AvailableSizes field" })
+                .send({ Staus: false, message: "Please provide AvailableSizes field" })
         }
 
 
@@ -151,7 +151,7 @@ const createProduct = async (req, res) => {
 
 
         if (style) {
-            if (!validate.isValid(style)) { return res.status(400).send({ Status: false, msg: "Please input style" }) }
+            if (!validate.isValid(style)) { return res.status(400).send({ Status: false, message: "Please input style" }) }
         }
 
 
@@ -178,7 +178,7 @@ const createProduct = async (req, res) => {
         const newProduct = await productModel.create(finalData)
         return res
             .status(201)
-            .send({ status: false, mesage: 'Success', Data: newProduct })
+            .send({ status: false, message: 'Success', Data: newProduct })
 
     } catch (err) {
         res
@@ -197,7 +197,7 @@ module.exports.createProduct = createProduct
 const getProduct = async (req, res) => {
 
     let { size, name, priceGreaterThan, priceLessThan ,priceSort } = req.query
-    console.log(req.query)
+    
     let filters = { isDeleted: false, deletedAt: null }
 
 
@@ -284,7 +284,7 @@ const getProduct = async (req, res) => {
     if (dataByFilters.length == 0) {
         return res
             .status(404)
-            .send({ Status: false, msg: "no products with the given queries were found" })
+            .send({ Status: false, message: "no products with the given queries were found" })
 
 
     }
@@ -313,21 +313,21 @@ const updateProductById = async (req, res) => {
         if (!(validate.isValidRequestBody(requestBody) || req.hasOwnProperty('files'))) {
             return res
                 .status(400)
-                .send({ Statuss: false, msg: "Please give input in request " })
+                .send({ Statuss: false, message: "Please give input in request " })
         }
 
 
         if (!validate.isValidObjectId(productId)) {
             return res
                 .status(404)
-                .send({ status: false, msg: "productId not found" });
+                .send({ status: false, message: "productId not found" });
         }
         let product = await productModel.findOne({ _id: productId, isDeleted: false });
 
         if (!product) {
             return res
                 .status(404)
-                .send({ status: false, msg: "product not found or has been deleted" });
+                .send({ status: false, message: "product not found or has been deleted" });
         }
 
         let {
@@ -351,7 +351,7 @@ const updateProductById = async (req, res) => {
             if (!validate.isValid(style)) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: "Please provide the style of product" })
+                    .send({ Status: false, message: "Please provide the style of product" })
             }
 
 
@@ -366,7 +366,7 @@ const updateProductById = async (req, res) => {
             if (!validate.isValid(price)) {
                 return res
                     .status(400)
-                    .send({ msg: "Please enter price" })
+                    .send({ message: "Please enter price" })
             }
 
             if (!validate.isValidNumber(parseInt(price))) {
@@ -391,7 +391,7 @@ const updateProductById = async (req, res) => {
             }
 
             let dupliTitle = await productModel.findOne({ title: title })
-            if (dupliTitle) { return res.status(400).send({ Status: false, msg: "Title already exists" }) }
+            if (dupliTitle) { return res.status(400).send({ Status: false, message: "Title already exists" }) }
 
             if (!Object.prototype.hasOwnProperty.call(updatedproductData, "$set"))
                 updatedproductData["$set"] = {};
@@ -409,7 +409,7 @@ const updateProductById = async (req, res) => {
             if (!validate.isValid(description)) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: "Please provide description" })
+                    .send({ Status: false, message: "Please provide description" })
             }
             if (!Object.prototype.hasOwnProperty.call(updatedproductData, "$set"))
                 updatedproductData["$set"] = {};
@@ -437,13 +437,13 @@ const updateProductById = async (req, res) => {
             if (!validate.isValid(isFreeShipping)) {
                 return res
                     .status(400)
-                    .send({ msg: "Pleae enter isFreeShipping" })
+                    .send({ message: "Pleae enter isFreeShipping" })
             }
 
             if (!validate.isValidBoolean(isFreeShipping)) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: "Please provide a valid boolean value" })
+                    .send({ Status: false, message: "Please provide a valid boolean value" })
 
             }
 
@@ -461,13 +461,13 @@ const updateProductById = async (req, res) => {
             if (!validate.isValid(availableSizes)) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: "Please provide available sizes" })
+                    .send({ Status: false, message: "Please provide available sizes" })
             }
 
             if (!validate.isValidSize(JSON.parse(availableSizes))) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: `please Provide Available Size from ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
+                    .send({ Status: false, message: `please Provide Available Size from ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
             }
 
 
@@ -485,7 +485,7 @@ const updateProductById = async (req, res) => {
             if (!validate.isValidNumber(parseInt(installments))) {
                 return res
                     .status(400)
-                    .send({ status: false, msg: "Please provide validd installments as Number" })
+                    .send({ status: false, message: "Please provide validd installments as Number" })
             }
 
 
@@ -503,7 +503,7 @@ const updateProductById = async (req, res) => {
             if (!validate.isValidImage(files[0])) {
                 return res
                     .status(400)
-                    .send({ Status: false, msg: "please provide  valid image " })
+                    .send({ Status: false, message: "please provide  valid image " })
             }
 
             let productImageLink = await aws.uploadFile(files[0]);
@@ -511,7 +511,7 @@ const updateProductById = async (req, res) => {
             if (!productImageLink) {
                 return res
                     .status(400)
-                    .send({ status: false, msg: "error in uploading the files" });
+                    .send({ status: false, message: "error in uploading the files" });
 
             }
 
@@ -523,7 +523,7 @@ const updateProductById = async (req, res) => {
         }
 
 
-        if (Object.keys(updatedproductData).length == 0) { return res.status(400).send({ Status: false, msg: "no data to update" }) }
+        if (Object.keys(updatedproductData).length == 0) { return res.status(400).send({ Status: false, message: "no data to update" }) }
 
         let upadatedProduct = await productModel.findOneAndUpdate(
             { _id: productId },
@@ -533,12 +533,12 @@ const updateProductById = async (req, res) => {
 
         return res
             .status(200)
-            .send({ status: true, msg: "Product updated successfully", data: upadatedProduct });
+            .send({ status: true, message: "Product updated successfully", Data: upadatedProduct });
 
     } catch (err) {
 
         res.status(500)
-            .send({ status: false, msg: err.message })
+            .send({ status: false, message: err.message })
     }
 }
 
@@ -553,7 +553,7 @@ const getProductById = async function (req, res) {
         if (!validate.isValidObjectId(pid)) {
             return res
                 .status(400)
-                .send({ Status: false, msg: "Please provide valid Product id" })
+                .send({ Status: false, message: "Please provide valid Product id" })
 
         }
 
@@ -561,17 +561,17 @@ const getProductById = async function (req, res) {
         if (!product) {
             return res
                 .status(404)
-                .send({ Status: false, msg: "No product with this id exists" })
+                .send({ Status: false, message: "No product with this id exists" })
         }
 
-        if (product.isDeleted === true) { return res.status(400).send({ Status: false, msg: "Product is deleted" }) }
+        if (product.isDeleted === true) { return res.status(400).send({ Status: false, message: "Product is deleted" }) }
 
 
         return res.status(200).send({ Status: true, message: "Success", Data: product })
 
 
 
-    } catch (err) { return res.status(500).send({ Status: false, msg: err.message }) }
+    } catch (err) { return res.status(500).send({ Status: false, message: err.message }) }
 
 }
 
@@ -585,7 +585,7 @@ const deleteProductById = async function (req, res) {
         if (!validate.isValidObjectId(pid)) {
             return res
                 .status(400)
-                .send({ Status: false, msg: "Please provide valid Product id" })
+                .send({ Status: false, message: "Please provide valid Product id" })
         }
 
 
@@ -594,13 +594,13 @@ const deleteProductById = async function (req, res) {
         if (!product) {
             return res
                 .status(404)
-                .send({ Status: false, msg: "Product not found" })
+                .send({ Status: false, message: "Product not found" })
         }
 
         if (product.isDeleted === true) {
             return res
                 .status(400)
-                .send({ Status: false, msg: "Product already deleted" })
+                .send({ Status: false, message: "Product already deleted" })
         }
 
 
@@ -609,7 +609,7 @@ const deleteProductById = async function (req, res) {
         return res.status(200).send({ Status: true, message: "Success", Data: deletedProduct })
 
 
-    } catch (err) { return res.status(500).send({ Status: false, msg: err.message }) }
+    } catch (err) { return res.status(500).send({ Status: false, message: err.message }) }
 
 }
 
