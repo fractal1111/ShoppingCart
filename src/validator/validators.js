@@ -16,9 +16,7 @@ const isValidRequestBody = (body) => {
 
 }
 
-const isValidFiles = function (requestFiles) {
-    return requestFiles.length > 0
-}
+
 
 const isValidEmail = (email) => {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
@@ -81,6 +79,7 @@ const isValidSize = (Arr) => {
 const isValidCharacters = (value) => {
     return /^[A-Za-z]+$/.test(value)
 }
+
 module.exports = {
     
     isValid,
@@ -92,7 +91,6 @@ module.exports = {
     isvalidPass,
     isValidImage,
     isValidObjectId,
-    isValidFiles,
     isValidNumber,
     isValidBoolean,
     isValidSize,

@@ -174,7 +174,7 @@ try {
 }
 }
 
-module.exports.createCart = createCart
+
 
 
 const updateCart = async (req, res) => {
@@ -285,7 +285,7 @@ try {
 
     }
 
-    console.log(removeProduct)
+    
     if (isNaN(removeProduct)) {
         return res
             .status(400)
@@ -401,7 +401,7 @@ const deleteCart = async function (req, res) {
 
 }
 
-module.exports.deleteCart = deleteCart
+
 
 
 const getById = async function (req, res) {
@@ -452,4 +452,13 @@ const getById = async function (req, res) {
     }
 
 }
+
+
+
+
+
+
+module.exports.createCart = createCart
 module.exports.getById = getById
+module.exports.deleteCart=deleteCart
+

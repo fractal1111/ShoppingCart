@@ -53,7 +53,7 @@ const createOrder = async (req, res) => {
         else if (!validators.isValidNumber(parseInt(items[i].quantity))) {
             return res
                 .status(400)
-                .send({ status: false, message: "Quantity should be a natural number" })
+                .send({ status: false, message: "Quantity should be a natural number" })   // "4" =>    Number()
         }
 
     }
