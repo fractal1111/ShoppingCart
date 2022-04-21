@@ -210,11 +210,13 @@ module.exports.createProduct = createProduct
 const getProduct = async (req, res) => {
 
     let {
+
         size,
         name,
         priceGreaterThan,
         priceLessThan,
         priceSort
+
     } = req.query
 
     let filters = { 
@@ -260,6 +262,7 @@ const getProduct = async (req, res) => {
         }
 
         filters['price'] = { $gt: priceGreaterThan, $lt: priceLessThan }
+        
 
     } else if ('priceGreaterThan' in req.query) {
 

@@ -53,9 +53,11 @@ const isvalidPass = (password) => {
 const isValidObjectId = (ObjectId) => {
     return mongoose.Types.ObjectId.isValid(ObjectId)
 }
+
 const isValidNumber = function (value) {
     return (!isNaN(value) && value > 0)
 }
+
 const isValidBoolean = (value) => {
     return (value === 'true' || value === 'false')
 }
@@ -80,6 +82,7 @@ const isValidCharacters = (value) => {
     return /^[A-Za-z]+$/.test(value)
 }
 module.exports = {
+    
     isValid,
     isValidEmail,
     isValidPincode,

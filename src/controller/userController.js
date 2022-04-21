@@ -18,7 +18,16 @@ try {
         .send({ status: false, message: 'invalid Input Parameters' })
     }
 
-    let { fname, lname, email, phone, password, address } = requestBody
+    let {
+
+      fname,
+      lname,
+      email,
+      phone,
+      password,
+      address
+      
+    } = requestBody
 
     address = JSON.parse(address)
 
