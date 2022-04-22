@@ -3,9 +3,10 @@ const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel')
 const validators = require('../validator/validators')
 const orderModel = require('../models/orderModel')
+const { RDS } = require('aws-sdk')
 
 const createOrder = async (req, res) => {
-
+try{
 
     userId = req.params.userId.trim()
     if (!validators.isValidObjectId(userId)) {
@@ -108,6 +109,13 @@ const createOrder = async (req, res) => {
 
     const newOrder = await orderModel.create(newOrderData)
     res.status(201).send({ status: true, message: `Success`, data: newOrder })
+
+}
+catch(err){return res.status(500).send({status:false , message :err.message})}
+
+
+
+
 
 }
 module.exports.createOrder = createOrder
@@ -229,7 +237,7 @@ try {
 
     return res
     .status(200)
-    .send({ status: false, message: 'Success', data: updatedOrder })
+    .send({ status: true, message: 'Success', data: updatedOrder })
 
 } catch (err) {
     return res

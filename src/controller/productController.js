@@ -200,7 +200,7 @@ try {
 
 
 const getProduct = async (req, res) => {
-
+try{
     let {
 
         size,
@@ -304,6 +304,13 @@ const getProduct = async (req, res) => {
     return res
         .status(200)
         .send({ status: true, message: `Success`, data: dataByFilters })
+
+}
+catch(err){
+    return res
+    .status(500)
+    .send({status:false , message:err.message})}
+
 
 }
 

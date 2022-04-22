@@ -474,11 +474,13 @@ const updateProfile = async function (req, res) {
 
       //address 
       
-      address1 = JSON.parse(address)
+      
       
 
 
       if (requestBody.hasOwnProperty('address')) {
+        
+        address1 = JSON.parse(address)
 
         
         let {shipping , billing} = address1
