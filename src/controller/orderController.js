@@ -198,20 +198,30 @@ try {
             .send({ status: false, message: `Status should be a valid string` })
 
     }
+    
+    
     status = status.trim()
 
-    if (!['pending', 'completed', 'cancelled'].includes(status)) {
+    if (!['completed', 'cancelled'].includes(status)) {
         return res.status(400)
-            .send({ status: false, message: `Status Should Be from [pending, completed, cancelled]` })
+            .send({ status: false, message: `Status can be changed from pending to "cancelled" or "completed" only` })
 
     }
 
-    if (isValidOrder.cancellable == false || isValidOrder.status == "cancelled") {
-        return res
-            .status(400)
-            .send({ status: false, message: `Order Cannot Be Canceled Or Its Already Cancelled ` })
+  
+    if(isValidOrder.status == 'completed'|| isValidOrder.status == 'cancelled' ){
+       return res.status(400).send({status:false , message:`The order has been ${isValidOrder.status} allready`})}
+   
+   
+   if (isValidOrder.cancellable == false && status === 'cancelled' ) {
+    return res
+        .status(400)
+        .send({ status: false, message: `Order Cannot Be Cancelled ` })
 
-    }
+}
+
+
+
 
     const updatedOrder = await orderModel.findByIdAndUpdate({ _id: orderId },
         { $set: { status: status } },
